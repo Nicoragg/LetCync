@@ -1,28 +1,43 @@
-# LetCync – Sistema Inteligente de Registro de Ponto
+#  LetCync – Sistema Inteligente de Registro de Ponto
+📖 Visão Geral
 
-O LetCync é um sistema de registro de ponto online desenvolvido com foco em simplicidade, robustez e escalabilidade.
-Ele combina frontend em React + Material UI, API em PHP com arquitetura MVC, MySQL como banco de dados relacional e integrações com Google Sheets, email e outros serviços externos de auditoria para garantir segurança da informação.
+O LetCync é um sistema de registro de ponto online, moderno, seguro e escalável, desenvolvido para empresas e estudos pessoais de desenvolvimento.
+Ele combina:
 
-O projeto nasce simples (registro de entrada e saída + consulta de registros), mas foi planejado para evoluir em funcionalidades e robustez, permitindo aplicações empresariais.
+Frontend: React + Material UI
+
+Backend: PHP (API RESTful MVC)
+
+Banco de Dados: MySQL
+
+Integrações: Google Sheets (backup), Email (PHPMailer)
+
+Autenticação e autorização: cadastro de usuários e perfis de acesso
+
+O objetivo é permitir que cada usuário registre seus próprios pontos com controle de acesso, mantendo auditoria e segurança da informação.
 
 🎯 Objetivos do Sistema
 
-Permitir que usuários registrem ponto de entrada e saída de forma rápida e intuitiva.
+Permitir que usuários registrem ponto de entrada e saída de forma segura.
 
-Fornecer interface moderna e responsiva usando React + Material UI.
+Evitar que alguém bata ponto por outro.
 
-Manter registros em banco de dados local (MySQL).
+Diferenciar perfis de acesso:
 
-Garantir redundância e segurança espelhando dados em sistemas externos (Google Sheets, email, ou até outro serviço sugerido).
+Usuário comum → vê apenas seus pontos.
 
-Disponibilizar painel de visualização dos registros.
+Administrador → vê pontos de todos os usuários.
 
-Servir como base de estudo e crescimento em desenvolvimento full stack.
+Manter histórico seguro em MySQL e Google Sheets.
+
+Notificar por email cada registro.
+
+Servir como base para estudo full-stack e evolução do sistema.
 
 🏗️ Arquitetura Geral
 flowchart TD
-    U[Usuário] --> F[Frontend React + Material UI]
-    F -->|Axios/Fetch API| A[API PHP MVC]
+    U[Usuário] -->|Login| F[Frontend React + Material UI]
+    F -->|API REST (Axios)| A[Backend PHP MVC]
     A --> B[(MySQL)]
     A --> S[Google Sheets API]
     A --> E[Serviço de Email (SMTP/PHPMailer)]
@@ -30,48 +45,52 @@ flowchart TD
     S --> A
     E --> A
 
-Componentes
+🔑 Funcionalidades
+1. Cadastro e Login de Usuário
 
-Frontend:
-React + Material UI para interface, formulários de registro e tela de visualização.
+Cadastro com nome, email e senha.
 
-Backend (API PHP MVC):
-Estrutura MVC organizada para lidar com rotas, validações, lógica de negócios e persistência.
+Login seguro com hash de senha (bcrypt).
 
-Banco de Dados (MySQL):
-Armazena registros oficiais e serve de base para relatórios.
+Perfis:
 
-Integrações externas:
+user → acesso ao próprio ponto
 
-Google Sheets (espelhamento de registros para backup/auditoria).
+admin → acesso a todos os pontos
 
-Email (confirmação e alerta de registros).
+Sessão JWT ou PHP Session para manter autenticação segura.
 
-Futuro: Webhooks, APIs de auditoria, armazenamento em nuvem.
+2. Registro de Ponto
 
-🔑 Funcionalidades Iniciais
+Entrada e saída com data/hora automática.
 
-Registrar ponto (Entrada / Saída)
+Campo opcional de observações (ex: home office).
 
-Botões distintos para entrada e saída.
+Sincronização com Google Sheets e MySQL.
 
-Registro automático com data e hora exata.
+Email de confirmação para o usuário.
 
-Campo opcional para observações.
+3. Visualização de Registros
 
-Visualizar registros
+Usuário comum → somente seus registros.
 
-Tela com listagem dos pontos batidos.
+Administrador → todos os registros da empresa.
 
-Sincronização em tempo real com backend.
+Filtro por data e usuário (para admins).
 
-Opção de filtros por data/usuário.
+Dashboard opcional para relatórios visuais.
 
-Integrações
+4. Segurança
 
-Backup em Google Sheets.
+HTTPS obrigatório.
 
-Envio de email para o próprio usuário ou gestor.
+Hash de senha no banco.
+
+Controle de sessão via JWT ou PHP Session.
+
+Validação de input para evitar SQL Injection.
+
+Redundância: MySQL + Google Sheets.
 
 🛠️ Tecnologias Utilizadas
 Frontend
@@ -80,36 +99,37 @@ React 18+
 
 Material UI (MUI v5)
 
-Axios (requisições HTTP)
+Axios (API REST)
 
-Day.js (manipulação de datas)
+Day.js (datas)
 
-Backend (API MVC em PHP)
+Backend
 
 PHP 8+
 
-Composer (dependências)
+Composer
 
-PHPMailer (envio de emails)
+PHPMailer
 
 Google API Client (Sheets)
 
 Banco de Dados
 
-MySQL 8+ (produção)
+MySQL (produção)
 
-SQLite (para estudo/local)
+SQLite (local/estudo)
 
 ⚙️ Estrutura do Projeto
-1. Backend (PHP MVC)
+Backend (PHP MVC)
 backend/
  ├── app/
  │    ├── Controllers/
+ │    │     ├── AuthController.php    # login, registro
  │    │     ├── RegistroController.php
  │    ├── Models/
+ │    │     ├── User.php
  │    │     ├── Registro.php
  │    ├── Views/
- │    │     ├── api_responses/
  │    ├── Core/
  │    │     ├── Database.php
  │    │     ├── Router.php
@@ -126,18 +146,23 @@ backend/
  ├── vendor/
  └── composer.json
 
-2. Frontend (React + MUI)
+Frontend (React + MUI)
 frontend/
  ├── src/
  │    ├── components/
  │    │     ├── RegistroButton.js
  │    │     ├── RegistroList.js
+ │    │     ├── LoginForm.js
+ │    │     ├── RegisterForm.js
  │    ├── pages/
  │    │     ├── Home.js
  │    │     ├── Registros.js
+ │    │     ├── Login.js
+ │    │     ├── Register.js
  │    ├── services/
  │    │     ├── api.js
  │    ├── utils/
+ │    │     ├── auth.js
  │    │     ├── formatDate.js
  │    ├── App.js
  │    ├── index.js
@@ -145,72 +170,69 @@ frontend/
  └── public/
 
 📂 Banco de Dados
+Tabela: users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    perfil ENUM('user','admin') DEFAULT 'user',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 Tabela: registros
 CREATE TABLE registros (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(100) NOT NULL,
+    user_id INT NOT NULL,
     tipo ENUM('entrada','saida') NOT NULL,
     observacao TEXT,
-    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 📬 Integrações
 Google Sheets
 
-Criar planilha de backup.
+Criação de backup para redundância.
 
-Configurar credenciais via Google Cloud.
+API via Google Service Account.
 
-Espelhar cada registro.
+Email (PHPMailer)
 
-Email (SMTP / PHPMailer)
+Confirmação de ponto registrado para usuário.
 
-Enviar notificação a cada ponto batido.
+Notificação opcional para admin.
 
-Configurável para enviar cópia a gestores.
+Futuro
 
-🔒 Segurança da Informação
+Webhook ou outro sistema de auditoria.
 
-Todos os acessos à API devem ser feitos via HTTPS.
+Painel gráfico de métricas.
 
-Backend em PHP deve implementar validação de entrada e filtros contra SQL Injection.
+🚀 Roadmap
 
-Futuro: autenticação com JWT (JSON Web Tokens) para identificar usuários.
+MVP: cadastro/login, registro de ponto, visualização pessoal, Google Sheets, email.
 
-Redundância: MySQL (principal) + Google Sheets (espelho).
+Autenticação JWT ou PHP Session robusta.
 
-🚀 Roadmap de Evolução
+Dashboard para admins.
 
-MVP – Registro simples (Entrada/Saída) + listagem + backup Sheets + email.
+Relatórios, exportações PDF/Excel.
 
-Fase 2 – Login de usuários e relatórios básicos.
+Mobile PWA.
 
-Fase 3 – Dashboard de métricas (React Charts).
+Notificações externas (WhatsApp/Telegram).
 
-Fase 4 – Exportação de relatórios (Excel/PDF).
+ML para detecção de anomalias de ponto.
 
-Fase 5 – Integração mobile (React Native ou PWA).
+🔒 Segurança
 
-Fase 6 – Notificações via WhatsApp/Telegram.
+HTTPS.
 
-Fase 7 – Machine Learning (detectar padrões de ponto, anomalias).
+Hash bcrypt nas senhas.
 
-📚 Guia de Estudo (sugestão para você evoluir)
+Validação de input.
 
-Entender a arquitetura MVC no PHP.
+Perfis de acesso (user, admin).
 
-Criar a API RESTful com rotas básicas (/registrar, /listar).
-
-Conectar ao MySQL e salvar registros.
-
-Integrar com Google Sheets API.
-
-Adicionar PHPMailer para envio de emails.
-
-Criar frontend React + Material UI.
-
-Conectar frontend com API via Axios.
-
-Criar tela de listagem de registros.
-
-Evoluir com autenticação, relatórios e dashboards.
+Backup de dados e redundância.
